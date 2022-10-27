@@ -1,11 +1,13 @@
 import argparse
 import fasta, fastq
+import re
 
 def getSuffixes(x):
     """
     Gets all suffixes from a string
     """
-    suffixes = [x[i] for i in range(0, len(x))]  
+    suffixes = [x[i:] for i in range(0, len(x))] 
+    print("list of unordered suffixes: ",suffixes) 
     return suffixes
 
 def getTrailingNumber(s):
@@ -13,7 +15,8 @@ def getTrailingNumber(s):
     return (s[:m.start()], int(s[m.start():]))
 
 def strcmp(s1, index, x):
-    max_i = min(s1, len(x)-index)
+    print(s1, " //// ",len(x)-index)
+    max_i = min(len(s1), len(x)-index)
     i = 0
     while i < max_i and s1[i] == x[index+i]:
         i += 1
@@ -34,7 +37,7 @@ def search(sa, pattern, genome):
         cmp = strcmp(pattern, midSuffix, genome)
 
         if cmp==0:
-            while cmp==0 and len(pattern) > len(midSuffix):
+            while cmp==0 and len(pattern) > len(genome) - midSuffix:
                 mid += 1
                 midSuffix = sa[mid]
                 cmp = strcmp(pattern, midSuffix, genome)
@@ -66,7 +69,7 @@ def main():
         if len(g[1]) == 0:
             continue
         sa = radix_sort(getSuffixes(g[1]+"$"))
-        print(sa)
+        print("suffix array: ",sa)
         for r in reads:
             length = len(r[1])
             if length == 0:
@@ -90,8 +93,7 @@ def radix_sort(lst: list[str]):
 
 def counting_sort(lst: list[str], place):
     maximum = max(lst, key = len)
-    counts = dict.fromkeys(["$",*maximum],[])
-
+    counts = dict.fromkeys(["$",*sorted(maximum)],[])
     for string_index in range(len(lst)):
         if place >= len(lst[string_index]):
             counts["$"] = [*counts["$"], lst[string_index]]
@@ -106,5 +108,4 @@ def counting_sort(lst: list[str], place):
     
     
 if __name__ == '__main__':
-    radix_sort(["abab$","bab$","ab$","b$","$"])
     main()
