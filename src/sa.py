@@ -15,14 +15,12 @@ def getTrailingNumber(s):
     return (s[:m.start()], int(s[m.start():]))
 
 def strcmp(s1, index, x):
-    print(s1, " //// ",len(x)-index)
     max_i = min(len(s1), len(x)-index)
     i = 0
     while i < max_i and s1[i] == x[index+i]:
         i += 1
         if i >= max_i:
             return 0
-
     if s1[i] > x[index+i]: return 1
     else: return -1
 
@@ -31,27 +29,32 @@ def search(sa, pattern, genome):
     low = 0
     high = len(sa)-1
 
-    while low <= high:
+    while True:
         mid = (high+low)//2
         midSuffix = sa[mid]
+        print(high, low, mid)
         cmp = strcmp(pattern, midSuffix, genome)
 
         if cmp==0:
             while cmp==0 and len(pattern) > len(genome) - midSuffix:
                 mid += 1
+                if mid >= len(sa): return
                 midSuffix = sa[mid]
                 cmp = strcmp(pattern, midSuffix, genome)
-            
             while cmp==0:
                 yield genome[sa[mid]:]
                 mid += 1
+                if mid >= len(sa): return
                 midSuffix = sa[mid]
-                cmp = strcmp(pattern, midSuffix, genome)       
+                cmp = strcmp(pattern, midSuffix, genome)
             return
-        elif cmp < 0:
-            high = mid
         else:
-            low = mid
+            if high-low <= 1:
+                return
+            if cmp < 0:
+                high = mid
+            else:
+                low = mid
 
 def main():
     argparser = argparse.ArgumentParser(
@@ -66,15 +69,17 @@ def main():
     out = []
 
     for g in genomes:
+        gen = g[1]+"$"
         if len(g[1]) == 0:
             continue
-        sa = radix_sort(getSuffixes(g[1]+"$"))
+        sa = radix_sort(getSuffixes(gen))
         print("suffix array: ",sa)
         for r in reads:
             length = len(r[1])
             if length == 0:
                 continue
-            for m in search(sa, r[1], g[1]):
+            matches = search(sa, r[1], gen)
+            for m in matches:
                 out.append((getTrailingNumber(r[0]), getTrailingNumber(g[0]), m, length, r[1]))
 
     for t in sorted(out, key=lambda x: (x[0], x[1], x[2])):
