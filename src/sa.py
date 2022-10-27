@@ -1,5 +1,5 @@
 import argparse
-
+import fasta, fastq
 
 def main():
     argparser = argparse.ArgumentParser(
@@ -7,8 +7,9 @@ def main():
     argparser.add_argument("genome", type=argparse.FileType('r'))
     argparser.add_argument("reads", type=argparse.FileType('r'))
     args = argparser.parse_args()
-    print(f"Find every reads in {args.reads.name} " +
-          f"in genome {args.genome.name}")
+
+    genomes = fasta.fasta_parse(args.genome)
+    reads = fastq.fastq_parser(args.reads)
 
 
 def radix_sort(lst: list[str]):
@@ -40,4 +41,4 @@ def counting_sort(lst: list[str], place):
     
 if __name__ == '__main__':
     radix_sort(["abab$","bab$","ab$","b$","$"])
-    #main()
+    main()
