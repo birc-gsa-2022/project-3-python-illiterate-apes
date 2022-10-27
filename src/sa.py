@@ -1,10 +1,16 @@
 import argparse
 import fasta, fastq
 
-def getSuffixArray(x):
-    suffixes = [i for i in range(0, len(x))]  
-    #TODO: Sort arrays
+def getSuffixes(x):
+    """
+    Gets all suffixes from a string
+    """
+    suffixes = [x[i] for i in range(0, len(x))]  
     return suffixes
+
+def getTrailingNumber(s):
+    m = re.search(r'\d+$', s)
+    return (s[:m.start()], int(s[m.start():]))
 
 def strcmp(s1, index, x):
     max_i = min(s1, len(x)-index)
@@ -30,13 +36,13 @@ def search(sa, pattern, genome):
         if cmp==0:
             while cmp==0 and len(pattern) > len(midSuffix):
                 mid += 1
-                midSuffix = sa[mid][0]
+                midSuffix = sa[mid]
                 cmp = strcmp(pattern, midSuffix, genome)
             
             while cmp==0:
-                yield sa[mid][1]
+                yield genome[sa[mid]:]
                 mid += 1
-                midSuffix = sa[mid][0]
+                midSuffix = sa[mid]
                 cmp = strcmp(pattern, midSuffix, genome)       
             return
         elif cmp < 0:
@@ -59,7 +65,8 @@ def main():
     for g in genomes:
         if len(g[1]) == 0:
             continue
-        sa = getSuffixArray(g[1]+"$")
+        sa = radix_sort(getSuffixes(g[1]+"$"))
+        print(sa)
         for r in reads:
             length = len(r[1])
             if length == 0:
