@@ -2,45 +2,42 @@ import argparse
 import fasta, fastq
 
 def getSuffixArray(x):
-    suffixes = []
-    for i in len(x):
-        suffixes.append([x[i:], i])
-    
+    suffixes = [i for i in range(0, len(x))]  
     #TODO: Sort arrays
     return suffixes
 
-def strcmp(s1, s2):
-    max_i = min(s1, s2)
+def strcmp(s1, index, x):
+    max_i = min(s1, len(x)-index)
     i = 0
-    while i < max_i and s1[i] == s2[i]:
+    while i < max_i and s1[i] == x[index+i]:
         i += 1
         if i >= max_i:
             return 0
 
-    if s1[i] > s2[i]: return 1
+    if s1[i] > x[index+i]: return 1
     else: return -1
 
 
-def search(sa, pattern):
+def search(sa, pattern, genome):
     low = 0
     high = len(sa)-1
 
     while low <= high:
         mid = (high+low)//2
-        midSuffix = sa[mid][0]
-        cmp = strcmp(pattern, midSuffix)
+        midSuffix = sa[mid]
+        cmp = strcmp(pattern, midSuffix, genome)
 
         if cmp==0:
             while cmp==0 and len(pattern) > len(midSuffix):
                 mid += 1
                 midSuffix = sa[mid][0]
-                cmp = strcmp(pattern, midSuffix)
+                cmp = strcmp(pattern, midSuffix, genome)
             
             while cmp==0:
                 yield sa[mid][1]
                 mid += 1
                 midSuffix = sa[mid][0]
-                cmp = strcmp(pattern, midSuffix)       
+                cmp = strcmp(pattern, midSuffix, genome)       
             return
         elif cmp < 0:
             high = mid
@@ -63,12 +60,11 @@ def main():
         if len(g[1]) == 0:
             continue
         sa = getSuffixArray(g[1]+"$")
-        string = memoryview(g[1].encode())
         for r in reads:
             length = len(r[1])
             if length == 0:
                 continue
-            for m in search(sa, r[1]):
+            for m in search(sa, r[1], g[1]):
                 out.append((getTrailingNumber(r[0]), getTrailingNumber(g[0]), m, length, r[1]))
 
     for t in sorted(out, key=lambda x: (x[0], x[1], x[2])):
