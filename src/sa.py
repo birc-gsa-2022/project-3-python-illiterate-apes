@@ -29,10 +29,17 @@ def search(sa, pattern, genome):
     low = 0
     high = len(sa)-1
 
+    if low == high:
+        cmp = strcmp(pattern, sa[low], genome)
+        if cmp == 0:
+            yield sa[low] + 1
+            return
+
+    lowCompared = False
+    highCompared = False
     while True:
         mid = (high+low)//2
         midSuffix = sa[mid]
-        # print(high, low, mid)
         cmp = strcmp(pattern, midSuffix, genome)
 
         if cmp==0:
@@ -41,20 +48,45 @@ def search(sa, pattern, genome):
                 if mid >= len(sa): return
                 midSuffix = sa[mid]
                 cmp = strcmp(pattern, midSuffix, genome)
+            
+            oldMid = mid
+            # Compare through both sides for all results
             while cmp==0:
                 yield sa[mid] + 1
                 mid += 1
+                if mid >= len(sa): break
+                midSuffix = sa[mid]
+                cmp = strcmp(pattern, midSuffix, genome)
+            
+            mid = oldMid - 1
+            if mid < 0: return
+            midSuffix = sa[mid]
+            cmp = strcmp(pattern, midSuffix, genome)
+            while cmp==0:
+                yield sa[mid] + 1
+                mid -= 1
                 if mid >= len(sa): return
                 midSuffix = sa[mid]
                 cmp = strcmp(pattern, midSuffix, genome)
             return
         else:
             if high-low <= 1:
+                # Compare the bounds if they haven't
+                if not(highCompared):
+                    cmp = strcmp(pattern, sa[high], genome)
+                    if cmp == 0:
+                        yield sa[high] + 1
+                if not(lowCompared):
+                    cmp = strcmp(pattern, sa[low], genome)
+                    if cmp == 0:
+                        yield sa[low] + 1
                 return
             if cmp < 0:
                 high = mid
+                highCompared = True
             else:
                 low = mid
+                lowCompared = True
 
 def main():
     argparser = argparse.ArgumentParser(
