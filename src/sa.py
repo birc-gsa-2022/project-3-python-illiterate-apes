@@ -42,7 +42,7 @@ def search(sa, pattern, genome):
                 midSuffix = sa[mid]
                 cmp = strcmp(pattern, midSuffix, genome)
             while cmp==0:
-                yield genome[sa[mid]:]
+                yield sa[mid] + 1
                 mid += 1
                 if mid >= len(sa): return
                 midSuffix = sa[mid]
