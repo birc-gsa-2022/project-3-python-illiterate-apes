@@ -47,16 +47,18 @@ def generate_multiple(chainLength, alphabet):
     minstreak = 3
     maxstreak = 100
     output = ""
-    for i in range(chainLength):
+    i= 0
+    while i<chainLength:
         selectedChar = random.choice(alphabet)
         if random.random()>=prob:
             output += selectedChar
+            i += 1
         else:
             streakLength = random.choice(range(minstreak, maxstreak+1))
             if streakLength > chainLength-i:
-                streakLength = i
+                streakLength = chainLength-i
             output += "".join(selectedChar for _ in range(streakLength))
-            i += streakLength-1
+            i += streakLength
     return output
 
 def generate_different(chainLength, alphabet):
@@ -299,8 +301,8 @@ def generate_test():
 
     NAME_FASTA = "> chr"
 
-    MIN_FASTA_LENGTH = 2*10**3
-    MAX_FASTA_LENGTH = 10**4
+    MIN_FASTA_LENGTH = 50
+    MAX_FASTA_LENGTH = 1500
 
     MIN_MATCHES = 0
     MAX_MATCHES = 10
