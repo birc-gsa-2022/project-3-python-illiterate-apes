@@ -7,7 +7,7 @@ def getSuffixes(x):
     Gets all suffixes from a string
     """
     suffixes = [x[i:] for i in range(0, len(x))] 
-    print("list of unordered suffixes: ",suffixes) 
+    # print("list of unordered suffixes: ",suffixes) 
     return suffixes
 
 def getTrailingNumber(s):
@@ -32,7 +32,7 @@ def search(sa, pattern, genome):
     while True:
         mid = (high+low)//2
         midSuffix = sa[mid]
-        print(high, low, mid)
+        # print(high, low, mid)
         cmp = strcmp(pattern, midSuffix, genome)
 
         if cmp==0:
@@ -73,7 +73,7 @@ def main():
         if len(g[1]) == 0:
             continue
         sa = radix_sort(getSuffixes(gen))
-        print("suffix array: ",sa)
+        # print("suffix array: ",sa)
         for r in reads:
             length = len(r[1])
             if length == 0:
@@ -87,6 +87,7 @@ def main():
 
 
 def radix_sort(lst: list[str]):
+    # print("Radix sort", len(lst))
     maximum = max(lst, key = len)
 
     for place in range(len(maximum),0, -1):
