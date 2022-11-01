@@ -23,9 +23,11 @@ Once you have implemented the `sa` program (and tested it to the best of your ab
 
 ## Problems encountered if any
 
+In the binary search implementation there was a couple of sketchy situations that have been patched with special case conditionals.
+
 ## Validation
 
-*How did you validate that the construct and the search algorithm works?*
+The validation process have been very similar to the previous times, but in this case, the length of the genomes have been reduced to a range between 50 and 1500 characters, since the suffix array construction takes a non-linear time.
 
 ## Running time
 
