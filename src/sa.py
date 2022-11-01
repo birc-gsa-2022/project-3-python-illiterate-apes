@@ -2,12 +2,11 @@ import argparse
 import fasta, fastq
 import re
 
-def getSuffixes(x):
+def getSuffixes(x: memoryview):
     """
     Gets all suffixes from a string
     """
     suffixes = [x[i:] for i in range(0, len(x))] 
-    # print("list of unordered suffixes: ",suffixes) 
     return suffixes
 
 def getTrailingNumber(s):
@@ -104,7 +103,8 @@ def main():
         gen = g[1]+"$"
         if len(g[1]) == 0:
             continue
-        sa = radix_sort(getSuffixes(gen))
+        genView = memoryview(gen.encode())
+        sa = radix_sort(getSuffixes(genView))
         # print("suffix array: ",sa)
         for r in reads:
             length = len(r[1])
@@ -118,7 +118,7 @@ def main():
         print(f"{t[0][0]}{t[0][1]}\t{t[1][0]}{t[1][1]}\t{t[2]}\t{t[3]}M\t{t[4]}")
 
 
-def radix_sort(lst: list[str]):
+def radix_sort(lst: list[memoryview]):
     # print("Radix sort", len(lst))
     maximum = max(lst, key = len)
 
@@ -129,7 +129,7 @@ def radix_sort(lst: list[str]):
     return lst
             
 
-def counting_sort(lst: list[str], place):
+def counting_sort(lst: list[memoryview], place):
     maximum = max(lst, key = len)
     counts = dict.fromkeys(["$",*sorted(maximum)],[])
     for string_index in range(len(lst)):
