@@ -17,7 +17,7 @@ Once you have implemented the `sa` program (and tested it to the best of your ab
 
 ## Algorithm
 
-*Which algorithm did you use to construct the suffix array. What is its running time?*
+The radix sort was the algorithm used to construct the suffix array. The running time is O(n^2) where n is the length of the string.
 
 ## Insights you may have had while implementing the algorithm
 
@@ -31,4 +31,19 @@ The validation process have been very similar to the previous times, but in this
 
 ## Running time
 
-*List experiments and results that show that both the construction algorithm and the search algorithm works in the expected running time. Add figures by embedding them here, as you learned how to do in project 1.*
+Because radix sort is a non-comparative sorting algorithm, the runtime is not affected if the suffixes are already ordered. To prove the time complexity of the algorithm, experiments were run with strings of varying length, and then plotted in a graph where the running time was divided by the expected complexity.
+
+![](./figs/squared.jpg)
+
+The line chart now looks like it is linear, however I'm not 100% convinced so to test if the time complexity is not O(n^3), the runtime was divided by said complexity.
+
+![](./figs/cubic.jpg)
+
+The resulting figure proves that its running time is lower than O(n^3).
+
+
+For the search the worst case is when all characters are the same in the string, and the pattern. Which should be O(m*log(n)+z) where z is the number of occurrences found, m is the length of the pattern and n the length of the string.
+
+![](./figs/search.jpg)
+
+The resulting figure corroborates the complexity.
