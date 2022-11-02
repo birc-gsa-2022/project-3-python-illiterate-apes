@@ -23,7 +23,7 @@ Once you have implemented the `sa` program (and tested it to the best of your ab
 
 ## Problems encountered if any
 
-In the binary search implementation there was a couple of sketchy situations that have been patched with special case conditionals.
+In the binary search implementation there was a couple of sketchy situations that have been patched with special case conditions. Later on, a complete, simple revamp has been done to the binary search.
 
 ## Validation
 
