@@ -13,80 +13,29 @@ def getTrailingNumber(s):
     m = re.search(r'\d+$', s)
     return (s[:m.start()], int(s[m.start():]))
 
-def strcmp(s1, index, x):
-    max_i = min(len(s1), len(x)-index)
-    i = 0
-    while i < max_i and s1[i] == x[index+i]:
-        i += 1
-        if i >= max_i:
-            return 0
-    if s1[i] > x[index+i]: return 1
-    else: return -1
+def lower(a: str, x: str, sa: memoryview, lo: int, hi: int, offset: int) -> int:
+    """Finds the lower bound of `a` at `offset` in the block defined by `lo:hi`."""
+    while lo < hi:  # Search in sa[lo:hi]
+        m = (lo + hi) // 2
+        if x[sa[m] + offset % len(x)] < a: # compare at column offset in sa
+            lo = m + 1
+        else:
+            hi = m
+    return lo
 
+def upper(a: str, x: str, sa: memoryview, lo: int, hi: int, offset: int) -> int:
+    """Finds the upper bound of `a` at `offset` in the block defined by `lo:hi`."""
+    return lower(chr(ord(a) + 1), x, sa, lo, hi, offset)
 
 def search(sa, pattern, genome):
-    low = 0
-    high = len(sa)-1
-
-    if low == high:
-        cmp = strcmp(pattern, sa[low], genome)
-        if cmp == 0:
-            yield sa[low] + 1
-            return
-
-    lowCompared = False
-    highCompared = False
-    while True:
-        mid = (high+low)//2
-        midSuffix = sa[mid]
-        cmp = strcmp(pattern, midSuffix, genome)
-
-        if cmp==0:
-            while cmp==0 and len(pattern) > len(genome) - midSuffix:
-                mid += 1
-                if mid >= len(sa): return
-                midSuffix = sa[mid]
-                cmp = strcmp(pattern, midSuffix, genome)
-            
-            oldMid = mid
-            # Compare through both sides for all results
-            while cmp==0:
-                yield sa[mid] + 1
-                mid += 1
-                if mid >= len(sa): break
-                midSuffix = sa[mid]
-                cmp = strcmp(pattern, midSuffix, genome)
-            
-            mid = oldMid - 1
-            if mid < 0: return
-            midSuffix = sa[mid]
-            cmp = strcmp(pattern, midSuffix, genome)
-            while cmp==0:
-                yield sa[mid] + 1
-                mid -= 1
-                if mid >= len(sa): return
-                midSuffix = sa[mid]
-                cmp = strcmp(pattern, midSuffix, genome)
-            return
-        else:
-            if high-low <= 1:
-                # Compare the bounds if they haven't
-                if not(highCompared):
-                    cmp = strcmp(pattern, sa[high], genome)
-                    if cmp == 0:
-                        yield sa[high] + 1
-                if not(lowCompared):
-                    cmp = strcmp(pattern, sa[low], genome)
-                    if cmp == 0:
-                        yield sa[low] + 1
-                return
-            if cmp < 0:
-                high = mid
-                highCompared = True
-            else:
-                low = mid
-                lowCompared = True
-
+    lo, hi = 0, len(sa)
+    for offset, a in enumerate(pattern):
+        lo = lower(a, genome, sa, lo, hi, offset)
+        hi = upper(a, genome, sa, lo, hi, offset)
+    for sol in sa[lo:hi]:
+        yield sol+1
+    return
+    
 def main():
     argparser = argparse.ArgumentParser(
         description="Exact matching using a suffix array")
